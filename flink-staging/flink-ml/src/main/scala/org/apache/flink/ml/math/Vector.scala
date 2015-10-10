@@ -51,6 +51,15 @@ trait Vector extends Serializable {
     */
   def copy: Vector
 
+  /**
+    * Returns the result of adding `other` to this vector.
+    *
+    * @param other
+    * @return
+    */
+  // TODO: Enforce that result is `None` if other.size != this.size
+  def +(other: Vector): Option[Vector]
+
   /** Returns the dot product of the recipient and the argument
     *
     * @param other a Vector

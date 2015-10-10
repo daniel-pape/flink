@@ -56,6 +56,22 @@ case class SparseVector(
     new SparseVector(size, indices.clone, data.clone)
   }
 
+  def +(other: Vector): Option[Vector] = {
+    if (other.size != size) {
+      None
+    } else {
+      other match {
+        case sv @ SparseVector(_, _, _) =>
+          val indices: Array[Int] = this.indices.intersect(sv.indices)
+          val data: Array[Double] = indices.map(i => sv.data(i) + this.data(i))
+          Some(new SparseVector(this.size, indices, data))
+        case dv @ DenseVector(_) =>
+          this + dv.toSparseVector
+        case _ => None
+      }
+    }
+  }
+
   /** Returns the dot product of the recipient and the argument
     *
     * @param other a Vector

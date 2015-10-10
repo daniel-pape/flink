@@ -27,7 +27,7 @@ import scala.util.Sorting
   *
   * @param numRows Number of rows
   * @param numCols Number of columns
-  * @param rowIndices Array containing the row indices of non-zero entries
+  * @param rowIndices Array containing the row indices of non-zero entries // TODO: Replace `non-zero entries` by `non-zero rows`?
   * @param colPtrs Array containing the starting offsets in data for each column
   * @param data Array containing the non-zero entries in column-major order
   */
@@ -82,6 +82,52 @@ class SparseMatrix(
     } else {
       data(index) = value
     }
+  }
+
+  /**
+   * Returns copy of `this` but with the function
+   * `f` applied to each entry.
+   *
+   * @param f [[Function1]] from [[Double]] to [[Double]]
+   * @return The [[DenseMatrix]] obtained by applying `f` to each entry of `this`
+   */
+  def map(f: Double => Double): Matrix = {
+    //new SparseMatrix(numRows, numCols, rowIndicesdata.map(f))
+    // TODO: Dummy impl
+    this
+  }
+
+  override def zero = new SparseMatrix(numRows, numCols, Array(), Array(), Array())
+
+  /** Returns `this` multiplied entry-wise with the
+    * [[Double]] `scalar`.
+    *
+    * @param scalar The [[Double]] used for the scalar multiplication
+    * @return Scalar multiplication of `this` with `scalar`
+    */
+  override def * (scalar: Double): Matrix = {
+    map(_ * scalar)
+  }
+
+  /** Returns the `colNum`-th column as [[SparseVector]]
+    *
+    * @param colNum Position of the column to return
+    * @return The `colNum`-th column
+    */
+  override def getColumn(colNum: Int): SparseVector = {
+//    val data: Array[Double] = data.slice(colPtrs(colNum), colPtrs(colNum + 1))
+//    new SparseVector(numRows, data)
+    // TODO: Dummy impl
+    new SparseVector(0, Array(), Array())
+  }
+
+  /** Returns the columns of this matrix as [[List]]
+    * of [[Vector]]s
+    *
+    * @return The columns of this matrix
+    */
+  override def getColumns: IndexedSeq[SparseVector] = {
+    (0 until numCols).map(getColumn)
   }
 
   override def toString: String = {

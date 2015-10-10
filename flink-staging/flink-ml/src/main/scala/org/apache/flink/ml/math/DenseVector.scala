@@ -85,6 +85,22 @@ case class DenseVector(
     data(index) = value
   }
 
+  def +(other: Vector): Option[Vector] = {
+    if (other.size != size) {
+      None
+    } else {
+      other match {
+        case sv @ SparseVector(_, _, _) =>
+          // TODO: [[SparseVector]] should provide already optimized `+`. See:
+          this.toSparseVector + sv
+        case dv @ DenseVector(_) =>
+          val data: Array[Double] = for {x <- this.data; y <- dv.data} yield x + y
+          new Some(DenseVector(data))
+        case _ => None
+      }
+    }
+  }
+
   /** Returns the dot product of the recipient and the argument
     *
     * @param other a Vector

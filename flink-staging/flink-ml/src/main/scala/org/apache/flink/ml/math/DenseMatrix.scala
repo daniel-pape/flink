@@ -18,6 +18,8 @@
 
 package org.apache.flink.ml.math
 
+import scala.collection.immutable.IndexedSeq
+
 /**
  * Dense matrix implementation of [[Matrix]]. Stores data in column major order in a continuous
  * double array.
@@ -168,6 +170,51 @@ case class DenseMatrix(
   override def copy: DenseMatrix = {
     new DenseMatrix(numRows, numCols, data.clone)
   }
+
+  Function
+
+  /**
+   * Returns copy of `this` but with the function
+   * `f` applied to each entry.
+   *
+   * @param f [[Function1]] from [[Double]] to [[Double]]
+   * @return The [[DenseMatrix]] obtained by applying `f` to each entry of `this`
+   */
+  def map(f: Double => Double): Matrix = {
+    new DenseMatrix(numRows, numCols, data.map(f))
+  }
+
+  override def zero = new DenseMatrix(numRows, numCols, Array.fill(numRows * numCols)(0.0))
+
+  /** Returns `this` multiplied entry-wise with the
+    * [[Double]] `scalar`.
+    *
+    * @param scalar The [[Double]] used for the scalar multiplication
+    * @return Scalar multiplication of `this` with `scalar`
+    */
+  override def * (scalar: Double): Matrix = {
+   map(_ * scalar)
+  }
+
+  /** Returns the `colNum`-th column as [[DenseVector]]
+    *
+    * @param colNum Position of the column to return
+    * @return The `colNum`-th column
+    */
+  override def getColumn(colNum: Int): DenseVector = {
+    val values: Array[Double] = (0 until numRows).map(rowNum => this(rowNum, colNum)).toArray
+    DenseVector(values: _*)
+  }
+
+  /** Returns the columns of this matrix as [[List]]
+    * of [[DenseVector]]s
+    *
+    * @return The columns of this matrix
+    */
+  override def getColumns: IndexedSeq[DenseVector] = {
+    (0 until numCols).map(getColumn)
+  }
+
 }
 
 object DenseMatrix {

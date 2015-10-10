@@ -57,6 +57,62 @@ trait Matrix {
     */
   def copy: Matrix
 
+  /**
+    * Returns copy of `this` but with the function
+    * `f` applied to each entry.
+    */
+  def map(f: Double => Double): Matrix
+
+  /**
+   * Zero matrix of dimension `numRows` times `numCols`
+   * @return
+   */
+  def zero: Matrix
+
+  // TODO: Dummy impl
+  def +(other: Matrix): Matrix = other
+
+  /**
+    * Returns `this` multiplied entry-wise with the
+    * [[Double]] `scalar`.
+    */
+  def *(scalar: Double): Matrix
+
+
+
+  /** Returns the `colNum`-th column as [[Vector]]
+    *
+    * @param colNum Position of the column to return
+    * @return The `colNum`-th column
+    */
+  def getColumn(colNum: Int): Vector
+
+  /** Returns the columns of this matrix as [[IndexedSeq]]
+    * of [[Vector]]s indexed by column index (starting with zero).
+    *
+    * @return The columns of this matrix
+    */
+  def getColumns: IndexedSeq[Vector]
+
+  /**
+    * Returns the sample covariance matrix of `this` considering
+    * each row of `this` as an observation.
+    *
+    * That is `this` is considered as data matrix in which
+    * each column describes the observations of a single feature
+    * across different observations.
+    *
+    * @return
+    */
+  final def cov(): Matrix = {
+    val columns: IndexedSeq[Vector] = this.getColumns
+    val innerProduct: Matrix = columns.map {
+      column => column.outer(column)
+    }.fold(this.zero)(_ + _)
+
+    innerProduct * (1 / this.numCols)
+  }
+
   def equalsMatrix(matrix: Matrix): Boolean = {
     if(numRows == matrix.numRows && numCols == matrix.numCols) {
       val coordinates = for(row <- 0 until numRows; col <- 0 until numCols) yield (row, col)
